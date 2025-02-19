@@ -1,4 +1,4 @@
 ﻿namespace ProjetoRabbitMQ.Relatorios
 {
-    public record RelatorioSolicitadoEvent(Guid Id, string Nome);
+    public record RelatorioSolicitadoEvent(Ulid Id, string Nome);
 }

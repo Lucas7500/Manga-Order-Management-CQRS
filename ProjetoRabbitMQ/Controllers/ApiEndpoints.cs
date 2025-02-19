@@ -11,7 +11,7 @@ namespace ProjetoRabbitMQ.Controllers
             {
                 var solicitacao = new SolicitacaoRelatorio()
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Ulid.NewUlid(),
                     Nome = name,
                     Status = "Pendente",
                     ProcessedTime = null

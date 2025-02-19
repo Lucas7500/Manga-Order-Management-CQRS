@@ -7,7 +7,7 @@
 
     public class SolicitacaoRelatorio
     {
-        public Guid Id { get; set; }
+        public Ulid Id { get; set; }
         public required string Nome { get; set; }
         public required string Status { get; set; }
         public DateTime? ProcessedTime { get; set; }
