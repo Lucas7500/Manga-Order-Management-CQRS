@@ -8,10 +8,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.AddRabbitMQService();
 builder.AddDatabaseContext();
+builder.AddJwtConfiguration();
+builder.Services.AddMediatRConfiguration();
+builder.Host.AddSerilogConfiguration();
 
 var app = builder.Build();
 
-app.AddApiEndpoints();
+app.AddUsersEndpoints();
 app.EnsureDatabaseCreated();
 
 if (app.Environment.IsDevelopment())
