@@ -1,6 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using ProjetoRabbitMQ.Models.Base;
 using ProjetoRabbitMQ.Services.Interfaces;
+using Serilog;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -14,6 +15,8 @@ namespace ProjetoRabbitMQ.Services
 
         public Result<string> GenerateToken(string userId, string email)
         {
+            logger.LogInformation("Started generating JWT token");
+
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_privateKey);
             var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.Sha512);
@@ -34,11 +37,13 @@ namespace ProjetoRabbitMQ.Services
             return Result<string>.Success(tokenHandler.WriteToken(token));
         }
 
-        public Result<bool> IsValidToken(string token)
+        public async Task<Result<bool>> IsValidToken(string token)
         {
             try
             {
-                var handler = new JwtSecurityTokenHandler();
+                logger.LogInformation("Started validating JWT token");
+
+                var tokenHandler = new JwtSecurityTokenHandler();
                 var key = Encoding.UTF8.GetBytes(_privateKey);
 
                 var validationParameters = new TokenValidationParameters
@@ -52,12 +57,16 @@ namespace ProjetoRabbitMQ.Services
                     ClockSkew = TimeSpan.Zero
                 };
 
-                var principal = handler.ValidateToken(token, validationParameters, out _);
+                var result = await tokenHandler.ValidateTokenAsync(token, validationParameters);
+
+                logger.LogInformation("Finished JWT token validation");
 
                 return Result<bool>.Success(true);
             }
             catch (Exception ex)
             {
+                logger.LogError("Error with JWT token validation: {Exception}", ex.ToString());
+
                 return Result<bool>.Failure("Invalid Token: {ErrorMessage}", ex.Message);
             }
         }

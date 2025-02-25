@@ -6,6 +6,6 @@ namespace ProjetoRabbitMQ.Services.Interfaces
     {
         Result<string> GenerateToken(string userId, string email);
 
-        Result<bool> IsValidToken(string token);
+        Task<Result<bool>> IsValidToken(string token);
     }
 }
