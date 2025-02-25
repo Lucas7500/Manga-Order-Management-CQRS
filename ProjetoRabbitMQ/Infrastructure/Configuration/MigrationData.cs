@@ -1,5 +1,5 @@
-﻿using ProjetoRabbitMQ.Models;
-using ProjetoRabbitMQ.Models.Enums;
+﻿using ProjetoRabbitMQ.Models.Enums;
+using ProjetoRabbitMQ.Models.User;
 using Scrypt;
 
 namespace ProjetoRabbitMQ.Infrastructure.Configuration

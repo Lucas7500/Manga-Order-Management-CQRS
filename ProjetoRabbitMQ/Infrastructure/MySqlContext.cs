@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProjetoRabbitMQ.Infrastructure.Configuration;
-using ProjetoRabbitMQ.Models;
+using ProjetoRabbitMQ.Models.Manga;
+using ProjetoRabbitMQ.Models.MangaOrder;
+using ProjetoRabbitMQ.Models.User;
 
 namespace ProjetoRabbitMQ.Infrastructure
 {

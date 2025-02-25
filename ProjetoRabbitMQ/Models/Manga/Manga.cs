@@ -1,7 +1,7 @@
 ﻿using ProjetoRabbitMQ.Models.Base;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ProjetoRabbitMQ.Models
+namespace ProjetoRabbitMQ.Models.Manga
 {
     [Table("mangas")]
     public class Manga : Product

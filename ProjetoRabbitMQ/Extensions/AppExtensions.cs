@@ -44,7 +44,7 @@ namespace ProjetoRabbitMQ.Extensions
                     options.SaveToken = true;
                     options.TokenValidationParameters = new()
                     {
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["JWT_KEY"]!)),
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT_KEY"]!)),
                         ValidateIssuer = false,
                         ValidateAudience = false,
                         ValidateLifetime = true,

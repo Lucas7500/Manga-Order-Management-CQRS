@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using ProjetoRabbitMQ.Models.Commands;
 using ProjetoRabbitMQ.Models.Enums;
+using ProjetoRabbitMQ.Models.Login.Commands;
 
 namespace ProjetoRabbitMQ.Controllers
 {
@@ -9,7 +9,7 @@ namespace ProjetoRabbitMQ.Controllers
     {
         public static void AddUsersEndpoints(this WebApplication app)
         {
-            app.MapPost("users/login", async (IMediator mediator, LoginCommand command, CancellationToken ct) =>
+            app.MapPost("users/login", async (LoginCommand command, IMediator mediator, CancellationToken ct) =>
             {
                 var result = await mediator.Send(command, ct);
 
@@ -56,16 +56,16 @@ namespace ProjetoRabbitMQ.Controllers
         {
             var ctSource = new CancellationTokenSource();
 
-            app.MapPost("orders", async () =>
+            app.MapGet("orders", async () =>
             {
             });
-            
+
+            app.MapGet("check-order/{id:ulid}", async (Ulid id) =>
+            {
+
+            });
+
             app.MapPost("order", async () =>
-            {
-
-            });
-
-            app.MapGet("check-order-status/{id:ulid}", async (Ulid id) =>
             {
 
             });

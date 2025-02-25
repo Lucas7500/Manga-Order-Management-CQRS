@@ -1,4 +1,4 @@
-﻿namespace ProjetoRabbitMQ.Models.Results
+﻿namespace ProjetoRabbitMQ.Models.Base
 {
     public class Result<TValue>
     {
@@ -25,7 +25,10 @@
         }
 
         public static Result<TValue> Success(TValue value) => new(value);
-        public static Result<TValue> Failure(string errorMessage) => new(errorMessage);
+        public static Result<TValue> Failure(string errorMessage, params object?[] args)
+            => args.Length > 0
+                ? new(string.Format(errorMessage, args))
+                : new(errorMessage);
 
         public TValue GetValueOrThrow()
         {

@@ -1,7 +1,7 @@
 ﻿using ProjetoRabbitMQ.Models.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ProjetoRabbitMQ.Models
+namespace ProjetoRabbitMQ.Models.MangaOrder
 {
     [Table("orders")]
     public class MangaOrder
