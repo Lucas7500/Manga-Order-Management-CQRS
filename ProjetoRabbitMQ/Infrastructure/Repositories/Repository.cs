@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace ProjetoRabbitMQ.Infrastructure.Repositories
 {
-    public sealed class Repository<TEntity, TKey>(MySqlContext context) : IRepository<TEntity, TKey> where TEntity : class
+    public sealed class Repository<TEntity>(DbContext context) : IRepository<TEntity> where TEntity : class
     {
         private readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
 
@@ -18,7 +18,7 @@ namespace ProjetoRabbitMQ.Infrastructure.Repositories
             return await query.ToListAsync(ct);
         }
 
-        public async Task<TEntity?> GetAsync(TKey id, CancellationToken ct = default)
+        public async Task<TEntity?> GetAsync(object id, CancellationToken ct = default)
         {
             return await _dbSet.FindAsync([id], ct);
         }

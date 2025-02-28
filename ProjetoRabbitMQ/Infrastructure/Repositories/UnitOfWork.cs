@@ -7,13 +7,13 @@ namespace ProjetoRabbitMQ.Infrastructure.Repositories
 {
     public class UnitOfWork(MySqlContext context) : IUnitOfWork, IDisposable
     {
-        private readonly Lazy<IRepository<User, int>> _userRepository = new(() => new Repository<User, int>(context));
-        private readonly Lazy<IRepository<Manga, Guid>> _mangaRepository = new(() => new Repository<Manga, Guid>(context));
-        private readonly Lazy<IRepository<MangaOrder, Ulid>> _mangaOrderRepository = new(() => new Repository<MangaOrder, Ulid>(context));
+        private readonly Lazy<IRepository<User>> _userRepository = new(() => new Repository<User>(context));
+        private readonly Lazy<IRepository<Manga>> _mangaRepository = new(() => new Repository<Manga>(context));
+        private readonly Lazy<IRepository<MangaOrder>> _mangaOrderRepository = new(() => new Repository<MangaOrder>(context));
 
-        public IRepository<User, int> UserRepository => _userRepository.Value;
-        public IRepository<Manga, Guid> MangaRepository => _mangaRepository.Value;
-        public IRepository<MangaOrder, Ulid> MangaOrderRepository => _mangaOrderRepository.Value;
+        public IRepository<User> UserRepository => _userRepository.Value;
+        public IRepository<Manga> MangaRepository => _mangaRepository.Value;
+        public IRepository<MangaOrder> MangaOrderRepository => _mangaOrderRepository.Value;
 
         public async Task CommitAsync()
         {
