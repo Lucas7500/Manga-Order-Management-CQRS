@@ -13,7 +13,7 @@ namespace ProjetoRabbitMQ.Services
         private readonly string _privateKey = Environment.GetEnvironmentVariable("JWT_KEY") 
             ?? throw new ArgumentNullException(nameof(_privateKey));
 
-        public Result<string> GenerateToken(string userId, string email)
+        public Result<string> GenerateToken(int userId, string email)
         {
             logger.LogInformation("Started generating JWT token");
 
@@ -23,7 +23,7 @@ namespace ProjetoRabbitMQ.Services
             
             var claims = new ClaimsIdentity(
             [
-                new Claim(ClaimTypes.NameIdentifier, userId),
+                new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
                 new Claim(ClaimTypes.Email, email),
             ]);
 

@@ -10,6 +10,7 @@ builder.AddRabbitMQService();
 builder.AddDatabaseContext();
 builder.AddJwtConfiguration();
 builder.Services.AddMediatRConfiguration();
+builder.Services.AddDependencyInjectionForServices();
 builder.Host.AddSerilogConfiguration();
 
 var app = builder.Build();

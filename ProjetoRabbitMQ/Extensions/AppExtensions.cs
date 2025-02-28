@@ -3,6 +3,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ProjetoRabbitMQ.Infrastructure;
+using ProjetoRabbitMQ.Infrastructure.Interfaces;
+using ProjetoRabbitMQ.Infrastructure.Repositories;
+using ProjetoRabbitMQ.Services;
+using ProjetoRabbitMQ.Services.Interfaces;
 using Serilog;
 using System.Text;
 
@@ -56,6 +60,13 @@ namespace ProjetoRabbitMQ.Extensions
         public static void AddMediatRConfiguration(this IServiceCollection services)
         {
             services.AddMediatR(config => config.RegisterServicesFromAssembly(typeof(Program).Assembly));
+        }
+        
+        public static void AddDependencyInjectionForServices(this IServiceCollection services)
+        {
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<ITokenService, JwtTokenService>();
+            services.AddScoped<IPasswordHasher, ScryptPasswordHasher>();
         }
 
         public static void AddSerilogConfiguration(this ConfigureHostBuilder config)

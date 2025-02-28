@@ -32,10 +32,6 @@ namespace ProjetoRabbitMQ.Infrastructure.Configuration
                 .HasMaxLength(256)
                 .IsRequired();
 
-            builder.Property(u => u.Salt)
-                .HasColumnName("salt_key")
-                .IsRequired(false);
-
             builder.Property(u => u.Role)
                 .HasColumnName("role")
                 .HasConversion<string>()

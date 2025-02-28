@@ -12,7 +12,6 @@ namespace ProjetoRabbitMQ.Infrastructure.Configuration
             Email = string.Empty,
             Role = UserRole.Admin,
             PasswordHash = new ScryptEncoder().Encode(Environment.GetEnvironmentVariable("ADMIN_PASSWORD")),
-            Salt = null
         };
     }
 }
