@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProjetoRabbitMQ.Infrastructure.Configuration;
+using ProjetoRabbitMQ.Models.Joins;
 using ProjetoRabbitMQ.Models.Manga;
 using ProjetoRabbitMQ.Models.MangaOrder;
 using ProjetoRabbitMQ.Models.User;
@@ -8,17 +9,20 @@ namespace ProjetoRabbitMQ.Infrastructure
 {
     public sealed class MySqlContext(DbContextOptions<MySqlContext> options) : DbContext(options)
     {
-        public DbSet<User> Users { get; set; } = null!;
-        public DbSet<Manga> Mangas { get; set; } = null!;
-        public DbSet<MangaOrder> Orders { get; set; } = null!;
+        public DbSet<UserEntity> Users { get; set; } = null!;
+        public DbSet<MangaEntity> Mangas { get; set; } = null!;
+        public DbSet<MangaOrderEntity> Orders { get; set; } = null!;
+        public DbSet<UserMangaEntity> UserMangas { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<UserEntity>(DbConfig.ConfigureUserEntity);
+            modelBuilder.Entity<MangaEntity>(DbConfig.ConfigureMangaEntity);
+            modelBuilder.Entity<MangaOrderEntity>(DbConfig.ConfigureMangaOrderEntity);
+            modelBuilder.Entity<MangaOrderItemEntity>(DbConfig.ConfigureMangaOrderItemEntity);
+            modelBuilder.Entity<UserMangaEntity>(DbConfig.ConfigureUserMangaEntity);
 
-            modelBuilder.Entity<User>(DbConfig.ConfigureUserEntity);
-            modelBuilder.Entity<Manga>(DbConfig.ConfigureMangaEntity);
-            modelBuilder.Entity<MangaOrder>(DbConfig.ConfigureMangaOrderEntity);
+            base.OnModelCreating(modelBuilder);
         }
     }
 }

@@ -1,10 +1,11 @@
 ﻿using ProjetoRabbitMQ.Models.Enums;
+using ProjetoRabbitMQ.Models.User;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ProjetoRabbitMQ.Models.MangaOrder
 {
     [Table("orders")]
-    public class MangaOrder
+    public class MangaOrderEntity
     {
         public Ulid Id { get; init; }
         public int CustomerId { get; init; }
@@ -12,11 +13,11 @@ namespace ProjetoRabbitMQ.Models.MangaOrder
         public DateTime? UpdatedAt { get; set; }
         public OrderStatus Status { get; set; }
         public string? CancellationReason { get; set; }
-        public List<MangaOrderItem> Mangas { get; init; } = [];
+
+        public UserEntity Customer { get; set; } = null!;
+        public ICollection<MangaOrderItemEntity> OrderedMangas { get; set; } = null!;
 
         [NotMapped]
         public bool IsCancelled => Status == OrderStatus.Cancelled;
-
-        public record MangaOrderItem(Guid MangaId, int Quantity);
     }
 }

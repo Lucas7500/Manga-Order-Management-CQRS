@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ProjetoRabbitMQ.Models.Joins;
 using ProjetoRabbitMQ.Models.Manga;
 using ProjetoRabbitMQ.Models.MangaOrder;
 using ProjetoRabbitMQ.Models.User;
@@ -8,7 +9,7 @@ namespace ProjetoRabbitMQ.Infrastructure.Configuration
 {
     public static class DbConfig
     {
-        public static void ConfigureUserEntity(EntityTypeBuilder<User> builder)
+        public static void ConfigureUserEntity(EntityTypeBuilder<UserEntity> builder)
         {
             builder.ToTable("users");
 
@@ -40,14 +41,15 @@ namespace ProjetoRabbitMQ.Infrastructure.Configuration
             builder.HasData(MigrationData.AdminUser);
         }
 
-        public static void ConfigureMangaEntity(EntityTypeBuilder<Manga> builder)
+        public static void ConfigureMangaEntity(EntityTypeBuilder<MangaEntity> builder)
         {
+            builder.ToTable("mangas");
+
             builder.HasKey(x => x.Id);
 
             builder.Property(u => u.Id)
                 .HasColumnName("id")
-                .HasDefaultValueSql("UUID()")
-                .ValueGeneratedOnAdd();
+                .ValueGeneratedNever();
 
             builder.Property(x => x.Quantity)
                 .HasColumnName("quantity")
@@ -85,8 +87,10 @@ namespace ProjetoRabbitMQ.Infrastructure.Configuration
                 .HasColumnType("json");
         }
         
-        public static void ConfigureMangaOrderEntity(EntityTypeBuilder<MangaOrder> builder)
+        public static void ConfigureMangaOrderEntity(EntityTypeBuilder<MangaOrderEntity> builder)
         {
+            builder.ToTable("orders");
+
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id)
                 .HasColumnName("id")
@@ -118,10 +122,51 @@ namespace ProjetoRabbitMQ.Infrastructure.Configuration
                 .HasColumnName("cancellation_reason")
                 .IsRequired(false);
 
-            builder.Property(x => x.Mangas)
-                .HasColumnName("mangas")
-                .HasColumnType("json")
-                .IsRequired(false);
+            builder
+                .HasOne(mo => mo.Customer)
+                .WithMany(u => u.Orders)
+                .HasForeignKey(mo => mo.CustomerId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+
+        public static void ConfigureMangaOrderItemEntity(EntityTypeBuilder<MangaOrderItemEntity> builder)
+        {
+            builder.ToTable("ordered_items");
+
+            builder.HasKey(x => x.Id);
+
+            builder.Property(u => u.Id)
+                .HasColumnName("id")
+                .ValueGeneratedNever();
+
+            builder.Property(x => x.Quantity)
+                .HasColumnName("quantity")
+                .IsRequired();
+
+            builder
+                .HasOne(moi => moi.OrderedManga)
+                .WithMany()
+                .HasForeignKey(moi => moi.MangaId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+        
+        public static void ConfigureUserMangaEntity(EntityTypeBuilder<UserMangaEntity> builder)
+        {
+            builder.ToTable("user_mangas");
+
+            builder.HasKey(x => new { x.UserId, x.MangaId });
+
+            builder
+                .HasOne(um => um.User)
+                .WithMany(u => u.UserMangas)
+                .HasForeignKey(um => um.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder
+                .HasOne(moi => moi.Manga)
+                .WithMany(m => m.UserMangas)
+                .HasForeignKey(moi => moi.MangaId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

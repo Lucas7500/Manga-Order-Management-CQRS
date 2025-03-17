@@ -6,12 +6,13 @@ namespace ProjetoRabbitMQ.Infrastructure.Configuration
 {
     internal static class MigrationData
     {
-        internal static readonly User AdminUser = new()
+        internal static readonly UserEntity AdminUser = new()
         {
+            Id = -1,
             Name = "admin",
             Email = string.Empty,
             Role = UserRole.Admin,
-            PasswordHash = new ScryptEncoder().Encode(Environment.GetEnvironmentVariable("ADMIN_PASSWORD")),
+            PasswordHash = "admin",
         };
     }
 }
