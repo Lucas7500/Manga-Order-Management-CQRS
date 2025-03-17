@@ -6,9 +6,9 @@ namespace ProjetoRabbitMQ.Infrastructure.Interfaces
 {
     public interface IUnitOfWork
     {
-        IRepository<User> UserRepository { get; }
-        IRepository<Manga> MangaRepository { get; }
-        IRepository<MangaOrder> MangaOrderRepository { get; }
+        IRepository<UserEntity> UserRepository { get; }
+        IRepository<MangaEntity> MangaRepository { get; }
+        IRepository<MangaOrderEntity> MangaOrderRepository { get; }
 
         Task CommitAsync();
     }
