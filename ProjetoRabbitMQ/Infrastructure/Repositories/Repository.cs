@@ -8,27 +8,25 @@ namespace ProjetoRabbitMQ.Infrastructure.Repositories
     public sealed class Repository<TEntity>(DbContext context) : IRepository<TEntity> where TEntity : class
     {
         private readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
+        private readonly HashSet<Expression<Func<TEntity, object>>> _includes = [];
 
         public async Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? predicate = null, CancellationToken ct = default)
         {
-            var query = predicate != null
-                ? _dbSet.Where(predicate)
-                : _dbSet;
-
+            var query = predicate != null ? _dbSet.Where(predicate) : _dbSet;
+            DefineIncludesForQuery(ref query);
             return await query.ToListAsync(ct);
         }
 
-        public async Task<TEntity?> GetAsync(object id, CancellationToken ct = default)
+        public async Task<TEntity?> GetAsync(object[] id, CancellationToken ct = default)
         {
-            return await _dbSet.FindAsync([id], ct);
+            _includes.Clear();
+            return await _dbSet.FindAsync(id, ct);
         }
 
         public async Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default)
         {
-            var query = predicate != null
-                ? _dbSet.Where(predicate)
-                : _dbSet;
-
+            var query = _dbSet.Where(predicate);
+            DefineIncludesForQuery(ref query);
             return await query.FirstOrDefaultAsync(ct);
         }
 
@@ -50,6 +48,26 @@ namespace ProjetoRabbitMQ.Infrastructure.Repositories
         public async Task<IDbContextTransaction> BeginTransactionAsync()
         {
             return await context.Database.BeginTransactionAsync();
+        }
+
+        public IQueryRepository<TEntity> IncludeForNextQuery(params Expression<Func<TEntity, object>>[] includes)
+        {
+            foreach (var include in includes)
+            {
+                _includes.Add(include);
+            }
+
+            return this;
+        }
+
+        private void DefineIncludesForQuery(ref IQueryable<TEntity> query)
+        {
+            foreach (var include in _includes)
+            {
+                query = query.Include(include);
+            }
+
+            _includes.Clear();
         }
     }
 }
