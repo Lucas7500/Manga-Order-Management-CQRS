@@ -10,6 +10,8 @@ namespace ProjetoRabbitMQ.Infrastructure.Repositories
         private readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
         private readonly HashSet<Expression<Func<TEntity, object>>> _includes = [];
 
+        public DbSet<TEntity> DbSet => _dbSet;
+
         public async Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? predicate = null, CancellationToken ct = default)
         {
             var query = predicate != null ? _dbSet.Where(predicate) : _dbSet;
