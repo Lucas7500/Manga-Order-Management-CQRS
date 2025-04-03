@@ -7,7 +7,7 @@ namespace ProjetoRabbitMQ.Services
     {
         private readonly ScryptEncoder _encoder = new();
 
-        public string HashPassword(string password) => _encoder.Encode(password);
+        public string Hash(string password) => _encoder.Encode(password);
         public bool Compare(string password, string hashedPassword) => _encoder.Compare(password, hashedPassword);
     }
 }
