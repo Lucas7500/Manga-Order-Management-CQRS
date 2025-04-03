@@ -10,11 +10,11 @@ namespace ProjetoRabbitMQ.Infrastructure.Repositories
         private readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
         private readonly HashSet<Expression<Func<TEntity, object>>> _includes = [];
 
-        public async Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? predicate = null, CancellationToken ct = default)
+        public Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>>? predicate = null, CancellationToken ct = default)
         {
             var query = predicate != null ? _dbSet.Where(predicate) : _dbSet;
             DefineIncludesForQuery(ref query);
-            return await query.ToListAsync(ct);
+            return query.AsNoTracking().ToListAsync(ct);
         }
 
         public async Task<TEntity?> GetAsync(object[] id, CancellationToken ct = default)
@@ -23,11 +23,16 @@ namespace ProjetoRabbitMQ.Infrastructure.Repositories
             return await _dbSet.FindAsync(id, ct);
         }
 
-        public async Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default)
+        public Task<TEntity?> GetAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default)
         {
             var query = _dbSet.Where(predicate);
             DefineIncludesForQuery(ref query);
-            return await query.FirstOrDefaultAsync(ct);
+            return query.FirstOrDefaultAsync(ct);
+        }
+
+        public Task<bool> HasAnyAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken ct = default)
+        {
+            return _dbSet.AnyAsync(predicate, ct);
         }
 
         public async Task AddAsync(TEntity entity, CancellationToken ct = default)
