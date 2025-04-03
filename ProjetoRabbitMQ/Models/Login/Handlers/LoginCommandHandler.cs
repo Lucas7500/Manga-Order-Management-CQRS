@@ -26,6 +26,11 @@ namespace ProjetoRabbitMQ.Models.Login.Handlers
 
             var tokenResult = tokenService.GenerateToken(user.Id, user.Email);
 
+            if (!tokenResult.IsSuccess)
+            {
+                return Result<LoginResponse>.Failure("Failed in Token Generation!");
+            }
+
             return Result<LoginResponse>.Success(new LoginResponse(tokenResult.Value));
         }
     }
