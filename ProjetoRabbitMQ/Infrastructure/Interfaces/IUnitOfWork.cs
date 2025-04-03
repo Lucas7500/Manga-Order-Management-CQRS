@@ -9,6 +9,7 @@ namespace ProjetoRabbitMQ.Infrastructure.Interfaces
         IRepository<UserEntity> UserRepository { get; }
         IRepository<MangaEntity> MangaRepository { get; }
         IRepository<MangaOrderEntity> MangaOrderRepository { get; }
+        IRepository<MangaOrderItemEntity> MangaOrderItemRepository { get;  }
 
         Task CommitAsync(CancellationToken ct = default);
     }
