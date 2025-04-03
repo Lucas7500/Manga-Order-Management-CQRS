@@ -10,6 +10,6 @@ namespace ProjetoRabbitMQ.Infrastructure.Interfaces
         IRepository<MangaEntity> MangaRepository { get; }
         IRepository<MangaOrderEntity> MangaOrderRepository { get; }
 
-        Task CommitAsync();
+        Task CommitAsync(CancellationToken ct = default);
     }
 }
