@@ -1,10 +1,13 @@
-﻿using MassTransit;
+﻿using FluentValidation;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ProjetoRabbitMQ.Infrastructure;
 using ProjetoRabbitMQ.Infrastructure.Interfaces;
 using ProjetoRabbitMQ.Infrastructure.Repositories;
+using ProjetoRabbitMQ.Models.User.Commands;
+using ProjetoRabbitMQ.Models.User.Validation;
 using ProjetoRabbitMQ.Services;
 using ProjetoRabbitMQ.Services.Interfaces;
 using Serilog;
@@ -67,6 +70,8 @@ namespace ProjetoRabbitMQ.Extensions
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ITokenService, JwtTokenService>();
             services.AddScoped<IPasswordHasher, ScryptPasswordHasher>();
+
+            services.AddScoped<IValidator<CreateUserCommand>, CreateUserCommandValidator>();
         }
 
         public static void AddSerilogConfiguration(this ConfigureHostBuilder config)
