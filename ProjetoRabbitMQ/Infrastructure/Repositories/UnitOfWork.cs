@@ -24,9 +24,9 @@ namespace ProjetoRabbitMQ.Infrastructure.Repositories
         public IRepository<MangaOrderEntity> MangaOrderRepository => _mangaOrderRepository.Value;
         public IRepository<MangaOrderItemEntity> MangaOrderItemRepository => _mangaOrderItemRepository.Value;
 
-        public async Task CommitAsync()
+        public async Task CommitAsync(CancellationToken ct = default)
         {
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(ct);
         }
 
         public void Dispose()
