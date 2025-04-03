@@ -1,7 +1,9 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProjetoRabbitMQ.Models.Enums;
 using ProjetoRabbitMQ.Models.Login.Commands;
+using ProjetoRabbitMQ.Models.User.Commands;
 
 namespace ProjetoRabbitMQ.Controllers
 {
@@ -9,24 +11,47 @@ namespace ProjetoRabbitMQ.Controllers
     {
         public static void AddUsersEndpoints(this WebApplication app)
         {
-            app.MapPost("users/login", async (LoginCommand command, IMediator mediator, CancellationToken ct) =>
-            {
-                var result = await mediator.Send(command, ct);
+            app.MapPost("users/login", 
+                async (
+                    [FromBody] LoginCommand command, 
+                    [FromServices] IMediator mediator, 
+                    [FromServices] CancellationToken ct) =>
+                {
+                    var result = await mediator.Send(command, ct);
 
-                return result.IsSuccess
-                    ? Results.Ok(new { result.Value.Token })
-                    : Results.BadRequest(result.ErrorMessage);
-            });
+                    return result.IsSuccess
+                        ? Results.Ok(new { result.Value.Token })
+                        : Results.BadRequest(result.ErrorMessage);
+                });
 
-            app.MapPost("users/register", [Authorize(Roles = nameof(UserRole.Admin))] async () =>
-            {
+            app.MapPost("users/register", [Authorize(Roles = nameof(UserRole.Admin))] 
+                async (
+                    [FromBody] CreateUserCommand command,
+                    [FromServices] IMediator mediator,
+                    [FromServices] CancellationToken ct) =>
+                {
+                    var result = await mediator.Send(command, ct);
 
-            });
+                    return result.IsSuccess
+                        ? Results.Ok($"User created successfully with id: {result.Value.Id}!")
+                        : Results.BadRequest(result.ErrorMessage);
+                });
 
-            app.MapPatch("users/{id:guid}", [Authorize(Roles = nameof(UserRole.Admin))] async (Guid id) =>
-            {
+            app.MapPatch("users/{id:guid}", [Authorize(Roles = nameof(UserRole.Admin))] 
+                async (
+                   [FromRoute] Guid id, 
+                   [FromBody] UpdateUserCommand command,
+                   [FromServices] IMediator mediator,
+                   [FromServices] CancellationToken ct) =>
+                {
+                    command.UserId = id;
 
-            });
+                    var result = await mediator.Send(command, ct);
+
+                    return result.IsSuccess
+                        ? Results.Ok($"User with id {id} updated successfully!")
+                        : Results.BadRequest(result.ErrorMessage);
+                });
 
             app.MapDelete("users/{id:guid}", [Authorize(Roles = nameof(UserRole.Admin))] async (Guid id) =>
             {
