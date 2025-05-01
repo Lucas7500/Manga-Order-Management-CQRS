@@ -57,16 +57,10 @@ namespace ProjetoRabbitMQ.Controllers
             app.MapDelete("users/{id:guid}", [Authorize(Roles = nameof(UserRole.Admin))] 
                 async (
                     [FromRoute] Guid id,
-                    [FromBody] DeleteUserCommand command,
                     [FromServices] IMediator mediator,
                     [FromServices] CancellationToken ct) =>
                 {
-                    command = command with
-                    {
-                        UserId = id
-                    };
-
-                    var result = await mediator.Send(command, ct);
+                    var result = await mediator.Send(new DeleteUserCommand(id), ct);
 
                     return result.IsSuccess
                         ? Results.Ok($"User with id {id} deleted successfully!")
