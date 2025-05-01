@@ -77,6 +77,7 @@ namespace ProjetoRabbitMQ.Extensions
             services.AddScoped<IValidator<UpdateUserCommand>, UpdateUserCommandValidator>();
 
             services.AddScoped<IValidator<CreateMangaCommand>, CreateMangaCommandValidator>();
+            services.AddScoped<IValidator<UpdateMangaCommand>, UpdateMangaCommandValidator>();
         }
 
         public static void AddSerilogConfiguration(this ConfigureHostBuilder config)
