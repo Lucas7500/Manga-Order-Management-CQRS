@@ -45,7 +45,10 @@ namespace ProjetoRabbitMQ.Controllers
                    [FromServices] IMediator mediator,
                    [FromServices] CancellationToken ct) =>
                 {
-                    command.UserId = id;
+                    command = command with
+                    {
+                        UserId = id
+                    };
 
                     var result = await mediator.Send(command, ct);
 
@@ -83,15 +86,37 @@ namespace ProjetoRabbitMQ.Controllers
                         : Results.BadRequest(result.ErrorMessage);
                 });
 
-            app.MapPatch("mangas/{id:guid}", [Authorize(Roles = nameof(UserRole.Admin))] async (Guid id) =>
-            {
+            app.MapPatch("mangas/{id:guid}", [Authorize(Roles = nameof(UserRole.Admin))] 
+            async (
+                    [FromRoute] Guid id,
+                    [FromBody] UpdateMangaCommand command,
+                    [FromServices] IMediator mediator,
+                    [FromServices] CancellationToken ct) =>
+                {
+                    command = command with
+                    {
+                        MangaId = id
+                    };
 
-            });
+                    var result = await mediator.Send(command, ct);
 
-            app.MapDelete("mangas/{id:guid}", [Authorize(Roles = nameof(UserRole.Admin))] async (Guid id) =>
-            {
+                    return result.IsSuccess
+                        ? Results.Ok($"Manga with id {id} updated successfully!")
+                        : Results.BadRequest(result.ErrorMessage);
+                });
 
-            });
+            app.MapDelete("mangas/{id:guid}", [Authorize(Roles = nameof(UserRole.Admin))]
+                async (
+                        [FromRoute] Guid id,
+                        [FromServices] IMediator mediator,
+                        [FromServices] CancellationToken ct) =>
+                {
+                    var result = await mediator.Send(new DeleteMangaCommand(id), ct);
+
+                    return result.IsSuccess
+                        ? Results.Ok($"Manga with id {id} deleted successfully!")
+                        : Results.BadRequest(result.ErrorMessage);
+                });
         }
         
         public static void AddOrdersEndpoints(this WebApplication app)

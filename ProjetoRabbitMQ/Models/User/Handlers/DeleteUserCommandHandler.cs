@@ -8,12 +8,11 @@ namespace ProjetoRabbitMQ.Models.User.Handlers
 {
     public class DeleteUserCommandHandler(
         ILogger<DeleteUserCommandHandler> logger,
-        IUnitOfWork unitOfWork,
-        IPasswordHasher hasher) : IRequestHandler<DeleteUserCommand, Result<bool>>
+        IUnitOfWork unitOfWork) : IRequestHandler<DeleteUserCommand, Result<bool>>
     {
         public async Task<Result<bool>> Handle(DeleteUserCommand request, CancellationToken ct)
         {
-            logger.LogInformation("Handling Creation of User with id: {UserId}", request.UserId);
+            logger.LogInformation("Handling Deletion of User with id: {UserId}", request.UserId);
 
             var repository = unitOfWork.UserRepository;
 

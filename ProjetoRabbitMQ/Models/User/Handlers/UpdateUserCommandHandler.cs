@@ -85,7 +85,7 @@ namespace ProjetoRabbitMQ.Models.User.Handlers
                 user.PasswordHash = hasher.Hash(request.NewPassword);
             }
 
-            if (request.NewRole != null)
+            if (request.NewRole.HasValue)
             {
                 user.Role = request.NewRole.Value;
             }

@@ -41,8 +41,8 @@ namespace ProjetoRabbitMQ.Models.Manga.Handlers
                 Quantity = request.Quantity,
                 Price = request.Price,
                 Description = request.Description,
-                Genres = request.Genres,
-                Aliases = request.Aliases,
+                Genres = request.Genres.Distinct().ToList(),
+                Aliases = request.Aliases.Distinct().ToList(),
             };
 
             await repository.AddAsync(manga, ct);
