@@ -4,11 +4,11 @@ using ProjetoRabbitMQ.Models.User.Commands;
 
 namespace ProjetoRabbitMQ.Models.User.Handlers
 {
-    public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, Result<string>>
+    public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, Result<bool>>
     {
-        public Task<Result<string>> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
+        public async Task<Result<bool>> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            
         }
     }
 }

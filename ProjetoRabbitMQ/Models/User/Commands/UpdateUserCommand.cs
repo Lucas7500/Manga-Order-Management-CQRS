@@ -4,7 +4,7 @@ using ProjetoRabbitMQ.Models.Enums;
 
 namespace ProjetoRabbitMQ.Models.User.Commands
 {
-    public record UpdateUserCommand : IRequest<Result<string>>
+    public record UpdateUserCommand : IRequest<Result<bool>>
     {
         public Guid UserId { get; set; }
         public string? NewName { get; init; }

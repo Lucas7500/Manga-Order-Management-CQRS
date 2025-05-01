@@ -3,7 +3,5 @@ using ProjetoRabbitMQ.Models.Base;
 
 namespace ProjetoRabbitMQ.Models.User.Commands
 {
-    public class DeleteUserCommand : IRequest<Result<string>>
-    {
-    }
+    public record DeleteUserCommand(Guid UserId, string Password) : IRequest<Result<bool>>;
 }

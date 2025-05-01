@@ -11,28 +11,53 @@ namespace ProjetoRabbitMQ.Models.User.Handlers
         ILogger<UpdateUserCommandHandler> logger,
         IValidator<UpdateUserCommand> validator,
         IUnitOfWork unitOfWork,
-        IPasswordHasher hasher) : IRequestHandler<UpdateUserCommand, Result<string>>
+        IPasswordHasher hasher) : IRequestHandler<UpdateUserCommand, Result<bool>>
     {
-        public async Task<Result<string>> Handle(UpdateUserCommand request, CancellationToken ct)
+        public async Task<Result<bool>> Handle(UpdateUserCommand request, CancellationToken ct)
         {
             logger.LogInformation("Handling Update of User with Id: {Id}", request.UserId);
 
-            var validationResult = await validator.ValidateAsync(request, ct);
-
-            if (!validationResult.IsValid)
+            var validationResult = await ValidateUpdateRequest(request, ct);
+            if (validationResult.IsFailure)
             {
-                return Result<string>.Failure(validationResult.ToString());
+                return validationResult;
             }
 
             var repository = unitOfWork.UserRepository;
-
             var user = await repository.GetAsync([request.UserId], ct);
             
             if (user == null)
             {
-                return Result<string>.Failure("User not found!");
+                return Result<bool>.Failure("User not found!");
             }
 
+            var updateResult = await UpdateUserProperties(repository, request, user, ct);
+            if (updateResult.IsFailure)
+            {
+                return updateResult;
+            }
+
+            repository.Update(user);
+            await unitOfWork.CommitAsync(ct);
+
+            return Result<bool>.Success(true);
+        }
+
+        private async Task<Result<bool>> ValidateUpdateRequest(UpdateUserCommand request, CancellationToken ct)
+        {
+            var validationResult = await validator.ValidateAsync(request, ct);
+
+            return validationResult.IsValid
+                ? Result<bool>.Success(true)
+                : Result<bool>.Failure(validationResult.ToString());
+        }
+
+        private async Task<Result<bool>> UpdateUserProperties(
+            IRepository<UserEntity> repository, 
+            UpdateUserCommand request, 
+            UserEntity user,
+            CancellationToken ct)
+        {
             if (request.NewName != null)
             {
                 user.Name = request.NewName;
@@ -40,9 +65,11 @@ namespace ProjetoRabbitMQ.Models.User.Handlers
 
             if (request.NewEmail != null)
             {
-                if (await repository.HasAnyAsync(user => user.Email == request.NewEmail, ct))
+                var isDuplicateEmail = await repository.HasAnyAsync(user => user.Email == request.NewEmail, ct);
+                
+                if (isDuplicateEmail)
                 {
-                    return Result<string>.Failure("User with this email already exists!");
+                    return Result<bool>.Failure("User with this email already exists!");
                 }
 
                 user.Email = request.NewEmail;
@@ -52,7 +79,7 @@ namespace ProjetoRabbitMQ.Models.User.Handlers
             {
                 if (request.CurrentPassword == null || !hasher.Compare(request.CurrentPassword, user.PasswordHash))
                 {
-                    return Result<string>.Failure("Incorrect Current Password!");
+                    return Result<bool>.Failure("Incorrect Current Password!");
                 }
 
                 user.PasswordHash = hasher.Hash(request.NewPassword);
@@ -63,11 +90,7 @@ namespace ProjetoRabbitMQ.Models.User.Handlers
                 user.Role = request.NewRole.Value;
             }
 
-            repository.Update(user);
-
-            await unitOfWork.CommitAsync(ct);
-
-            return Result<string>.Success(string.Empty);
+            return Result<bool>.Success(true);
         }
     }
 }

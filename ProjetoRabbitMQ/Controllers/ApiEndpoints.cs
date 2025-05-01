@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using ProjetoRabbitMQ.Models.Enums;
 using ProjetoRabbitMQ.Models.Login.Commands;
 using ProjetoRabbitMQ.Models.User.Commands;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace ProjetoRabbitMQ.Controllers
 {
@@ -53,10 +54,24 @@ namespace ProjetoRabbitMQ.Controllers
                         : Results.BadRequest(result.ErrorMessage);
                 });
 
-            app.MapDelete("users/{id:guid}", [Authorize(Roles = nameof(UserRole.Admin))] async (Guid id) =>
-            {
+            app.MapDelete("users/{id:guid}", [Authorize(Roles = nameof(UserRole.Admin))] 
+                async (
+                    [FromRoute] Guid id,
+                    [FromBody] DeleteUserCommand command,
+                    [FromServices] IMediator mediator,
+                    [FromServices] CancellationToken ct) =>
+                {
+                    command = command with
+                    {
+                        UserId = id
+                    };
 
-            });
+                    var result = await mediator.Send(command, ct);
+
+                    return result.IsSuccess
+                        ? Results.Ok($"User with id {id} deleted successfully!")
+                        : Results.BadRequest(result.ErrorMessage);
+                });
         }
 
         public static void AddMangasEndpoints(this WebApplication app)

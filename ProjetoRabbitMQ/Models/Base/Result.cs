@@ -5,6 +5,7 @@
         public TValue Value { get; private set; }
         public bool IsSuccess { get; private set; }
         public string? ErrorMessage { get; private set; }
+        public bool IsFailure => !IsSuccess;
 
         private Result(TValue value)
         {
@@ -32,7 +33,7 @@
 
         public TValue GetValueOrThrow()
         {
-            if (!IsSuccess)
+            if (IsFailure)
                 throw new InvalidOperationException(ErrorMessage);
 
             return Value!;

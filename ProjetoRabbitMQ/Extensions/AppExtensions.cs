@@ -72,6 +72,7 @@ namespace ProjetoRabbitMQ.Extensions
             services.AddScoped<IPasswordHasher, ScryptPasswordHasher>();
 
             services.AddScoped<IValidator<CreateUserCommand>, CreateUserCommandValidator>();
+            services.AddScoped<IValidator<UpdateUserCommand>, UpdateUserCommandValidator>();
         }
 
         public static void AddSerilogConfiguration(this ConfigureHostBuilder config)
