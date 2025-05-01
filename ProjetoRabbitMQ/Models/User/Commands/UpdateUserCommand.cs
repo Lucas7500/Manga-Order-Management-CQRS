@@ -6,7 +6,7 @@ namespace ProjetoRabbitMQ.Models.User.Commands
 {
     public record UpdateUserCommand : IRequest<Result<bool>>
     {
-        public Guid UserId { get; set; }
+        public int UserId { get; set; }
         public string? NewName { get; init; }
         public string? NewEmail { get; init; }
         public string? NewPassword { get; init; }

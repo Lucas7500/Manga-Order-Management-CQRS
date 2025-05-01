@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjetoRabbitMQ.Models.Enums;
 using ProjetoRabbitMQ.Models.Login.Commands;
+using ProjetoRabbitMQ.Models.Manga.Commands;
 using ProjetoRabbitMQ.Models.User.Commands;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace ProjetoRabbitMQ.Controllers
 {
@@ -40,7 +40,7 @@ namespace ProjetoRabbitMQ.Controllers
 
             app.MapPatch("users/{id:guid}", [Authorize(Roles = nameof(UserRole.Admin))] 
                 async (
-                   [FromRoute] Guid id, 
+                   [FromRoute] int id, 
                    [FromBody] UpdateUserCommand command,
                    [FromServices] IMediator mediator,
                    [FromServices] CancellationToken ct) =>
@@ -56,7 +56,7 @@ namespace ProjetoRabbitMQ.Controllers
 
             app.MapDelete("users/{id:guid}", [Authorize(Roles = nameof(UserRole.Admin))] 
                 async (
-                    [FromRoute] Guid id,
+                    [FromRoute] int id,
                     [FromServices] IMediator mediator,
                     [FromServices] CancellationToken ct) =>
                 {
@@ -70,17 +70,25 @@ namespace ProjetoRabbitMQ.Controllers
 
         public static void AddMangasEndpoints(this WebApplication app)
         {
-            app.MapPost("mangas/register", [Authorize(Roles = nameof(UserRole.Admin))] async () =>
+            app.MapPost("mangas/register", [Authorize(Roles = nameof(UserRole.Admin))] 
+                async (
+                    [FromBody] CreateMangaCommand command,
+                    [FromServices] IMediator mediator,
+                    [FromServices] CancellationToken ct) =>
+                {
+                    var result = await mediator.Send(command, ct);
+
+                    return result.IsSuccess
+                        ? Results.Ok($"Manga created successfully with id: {result.Value.Id}!")
+                        : Results.BadRequest(result.ErrorMessage);
+                });
+
+            app.MapPatch("mangas/{id:guid}", [Authorize(Roles = nameof(UserRole.Admin))] async (Guid id) =>
             {
 
             });
 
-            app.MapPatch("mangas/{id:ulid}", [Authorize(Roles = nameof(UserRole.Admin))] async (Ulid id) =>
-            {
-
-            });
-
-            app.MapDelete("mangas/{id:ulid}", [Authorize(Roles = nameof(UserRole.Admin))] async (Ulid id) =>
+            app.MapDelete("mangas/{id:guid}", [Authorize(Roles = nameof(UserRole.Admin))] async (Guid id) =>
             {
 
             });

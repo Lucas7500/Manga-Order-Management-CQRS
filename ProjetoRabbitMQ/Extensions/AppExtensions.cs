@@ -6,6 +6,8 @@ using Microsoft.IdentityModel.Tokens;
 using ProjetoRabbitMQ.Infrastructure;
 using ProjetoRabbitMQ.Infrastructure.Interfaces;
 using ProjetoRabbitMQ.Infrastructure.Repositories;
+using ProjetoRabbitMQ.Models.Manga.Commands;
+using ProjetoRabbitMQ.Models.Manga.Validation;
 using ProjetoRabbitMQ.Models.User.Commands;
 using ProjetoRabbitMQ.Models.User.Validation;
 using ProjetoRabbitMQ.Services;
@@ -73,6 +75,8 @@ namespace ProjetoRabbitMQ.Extensions
 
             services.AddScoped<IValidator<CreateUserCommand>, CreateUserCommandValidator>();
             services.AddScoped<IValidator<UpdateUserCommand>, UpdateUserCommandValidator>();
+
+            services.AddScoped<IValidator<CreateMangaCommand>, CreateMangaCommandValidator>();
         }
 
         public static void AddSerilogConfiguration(this ConfigureHostBuilder config)

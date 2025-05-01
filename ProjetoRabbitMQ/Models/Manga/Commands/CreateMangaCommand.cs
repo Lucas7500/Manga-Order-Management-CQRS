@@ -4,7 +4,13 @@ using ProjetoRabbitMQ.Models.Manga.Responses;
 
 namespace ProjetoRabbitMQ.Models.Manga.Commands
 {
-    public class CreateMangaCommand : IRequest<Result<CreatedMangaResult>>
-    {
-    }
+    public record CreateMangaCommand(
+        string Title,
+        string Author,
+        DateTime ReleaseDate,
+        uint Quantity,
+        decimal Price,
+        string? Description,
+        List<string> Genres,
+        List<string> Aliases) : IRequest<Result<CreatedMangaResult>>;
 }

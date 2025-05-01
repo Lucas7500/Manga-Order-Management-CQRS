@@ -1,6 +1,4 @@
 ﻿namespace ProjetoRabbitMQ.Models.Manga.Responses
 {
-    public class CreatedMangaResult
-    {
-    }
+    public record CreatedMangaResult(Guid Id);
 }
