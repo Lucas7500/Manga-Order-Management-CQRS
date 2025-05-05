@@ -4,7 +4,5 @@ using ProjetoRabbitMQ.Models.MangaOrder.Responses;
 
 namespace ProjetoRabbitMQ.Models.MangaOrder.Queries
 {
-    public class GetAllMangaOrderQuery : IRequest<Result<List<MangaOrderQueryModel>>>
-    {
-    }
+    public record GetAllMangaOrderQuery(int CustomerId) : IRequest<Result<List<MangaOrderQueryModel>>>;
 }

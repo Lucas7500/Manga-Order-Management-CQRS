@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using ProjetoRabbitMQ.Models.Enums;
 using ProjetoRabbitMQ.Models.Login.Commands;
 using ProjetoRabbitMQ.Models.Manga.Commands;
+using ProjetoRabbitMQ.Models.MangaOrder.Queries;
 using ProjetoRabbitMQ.Models.User.Commands;
 
 namespace ProjetoRabbitMQ.Controllers
@@ -38,7 +39,7 @@ namespace ProjetoRabbitMQ.Controllers
                         : Results.BadRequest(result.ErrorMessage);
                 });
 
-            app.MapPatch("users/{id:guid}", [Authorize(Roles = nameof(UserRole.Admin))] 
+            app.MapPatch("users/{id:int}", [Authorize(Roles = nameof(UserRole.Admin))] 
                 async (
                    [FromRoute] int id, 
                    [FromBody] UpdateUserCommand command,
@@ -57,7 +58,7 @@ namespace ProjetoRabbitMQ.Controllers
                         : Results.BadRequest(result.ErrorMessage);
                 });
 
-            app.MapDelete("users/{id:guid}", [Authorize(Roles = nameof(UserRole.Admin))] 
+            app.MapDelete("users/{id:int}", [Authorize(Roles = nameof(UserRole.Admin))] 
                 async (
                     [FromRoute] int id,
                     [FromServices] IMediator mediator,
@@ -123,19 +124,38 @@ namespace ProjetoRabbitMQ.Controllers
         {
             var ctSource = new CancellationTokenSource();
 
-            app.MapGet("orders", async () =>
-            {
-            });
+            app.MapGet("orders/{customerId:int}",
+                async (
+                        [FromRoute] int customerId,
+                        [FromServices] IMediator mediator,
+                        [FromServices] CancellationToken ct) =>
+                {
+                    var result = await mediator.Send(new GetAllMangaOrderQuery(customerId), ct);
 
-            app.MapGet("check-order/{id:ulid}", async (Ulid id) =>
-            {
+                    return result.IsSuccess
+                        ? Results.Ok(result.Value)
+                        : Results.BadRequest(result.ErrorMessage);
+                });
 
-            });
+            app.MapGet("check-order/{id:ulid}",
+                async (
+                        [FromRoute] Ulid id,
+                        [FromServices] IMediator mediator,
+                        [FromServices] CancellationToken ct) =>
+                {
+                    var result = await mediator.Send(new GetMangaOrderByIdQuery(id), ct);
 
-            app.MapPost("order", async () =>
-            {
+                    return result.IsSuccess
+                        ? Results.Ok(result.Value)
+                        : Results.BadRequest(result.ErrorMessage);
+                });
 
-            });
+            app.MapPost("order",
+                async (
+                        [FromServices] CancellationToken ct) =>
+                {
+                    using var combinedToken = CancellationTokenSource.CreateLinkedTokenSource(ctSource.Token, ct);
+                });
         }
     }
 }
