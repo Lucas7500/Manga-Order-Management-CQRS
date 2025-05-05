@@ -1,6 +1,4 @@
 ﻿namespace ProjetoRabbitMQ.Models.MangaOrder.Responses
 {
-    public class RequestedMangaOrderResponse
-    {
-    }
+    public record RequestedMangaOrderResponse(Ulid MangaOrderId);
 }
