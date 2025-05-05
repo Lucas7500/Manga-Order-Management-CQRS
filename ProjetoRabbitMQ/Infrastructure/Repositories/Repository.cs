@@ -23,6 +23,7 @@ namespace ProjetoRabbitMQ.Infrastructure.Repositories
         {
             if (_includes.Count != 0)
             {
+                _includes.Clear();
                 throw new NotSupportedException("Includes are not supported for GetAsync with id.");
             }
 
