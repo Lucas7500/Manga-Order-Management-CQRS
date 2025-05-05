@@ -21,7 +21,11 @@ namespace ProjetoRabbitMQ.Infrastructure.Repositories
 
         public async Task<TEntity?> GetAsync(object[] id, CancellationToken ct = default)
         {
-            _includes.Clear();
+            if (_includes.Count != 0)
+            {
+                throw new NotSupportedException("Includes are not supported for GetAsync with id.");
+            }
+
             return await _dbSet.FindAsync(id, ct);
         }
 
