@@ -11,7 +11,14 @@ namespace ProjetoRabbitMQ.Controllers
 {
     public static class ApiEndpoints
     {
-        public static void AddUsersEndpoints(this WebApplication app)
+        public static void AddEndpoints(this WebApplication app)
+        {
+            app.AddUsersEndpoints();
+            app.AddMangasEndpoints();
+            app.AddOrdersEndpoints();
+        }
+
+        private static void AddUsersEndpoints(this WebApplication app)
         {
             app.MapPost("users/login", 
                 async (
@@ -72,7 +79,7 @@ namespace ProjetoRabbitMQ.Controllers
                 });
         }
 
-        public static void AddMangasEndpoints(this WebApplication app)
+        private static void AddMangasEndpoints(this WebApplication app)
         {
             app.MapPost("mangas/register", [Authorize(Roles = nameof(UserRole.Admin))] 
                 async (
@@ -120,7 +127,7 @@ namespace ProjetoRabbitMQ.Controllers
                 });
         }
         
-        public static void AddOrdersEndpoints(this WebApplication app)
+        private static void AddOrdersEndpoints(this WebApplication app)
         {
             var ctSource = new CancellationTokenSource();
 

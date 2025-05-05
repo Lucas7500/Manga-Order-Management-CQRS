@@ -15,7 +15,7 @@ builder.Host.AddSerilogConfiguration();
 
 var app = builder.Build();
 
-app.AddUsersEndpoints();
+app.AddEndpoints();
 app.EnsureDatabaseCreated();
 
 if (app.Environment.IsDevelopment())
