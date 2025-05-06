@@ -100,9 +100,7 @@ namespace ProjetoRabbitMQ.Controllers
 
                     var result = await mediator.Send(command, ct);
 
-                    return result.IsSuccess
-                        ? Results.Ok($"Manga with id {id} updated successfully!")
-                        : Results.BadRequest(result.ErrorMessage);
+                    return OkOrBadRequest(result, $"Manga with id {id} updated successfully!");
                 });
 
             app.MapDelete("mangas/{id:guid}", [Authorize(Roles = nameof(UserRole.Admin))]
