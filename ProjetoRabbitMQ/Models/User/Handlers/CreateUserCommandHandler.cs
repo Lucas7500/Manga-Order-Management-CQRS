@@ -19,24 +19,28 @@ namespace ProjetoRabbitMQ.Models.User.Handlers
             logger.LogInformation("Handling Creation of User with email: {Email}", request.Email);
 
             var validationResult = await validator.ValidateAsync(request, ct);
-            
             if (!validationResult.IsValid)
             {
                 return Result<CreatedUserResponse>.Failure(validationResult.ToString());
             }
 
             var repository = unitOfWork.UserRepository;
-
             if (await repository.HasAnyAsync(user => user.Email == request.Email, ct))
             {
                 return Result<CreatedUserResponse>.Failure("User with this email already exists!");
+            }
+
+            var hashedPasswordResult = hasher.Hash(request.Password);
+            if (hashedPasswordResult.IsFailure)
+            {
+                return Result<CreatedUserResponse>.Failure("Error hashing password!");
             }
 
             var user = new UserEntity
             {
                 Name = request.Name,
                 Email = request.Email,
-                PasswordHash = hasher.Hash(request.Password),
+                PasswordHash = hashedPasswordResult.Value,
                 Role = request.Role
             };
 

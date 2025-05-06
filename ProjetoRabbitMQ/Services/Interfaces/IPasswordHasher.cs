@@ -1,8 +1,10 @@
-﻿namespace ProjetoRabbitMQ.Services.Interfaces
+﻿using ProjetoRabbitMQ.Models.Base;
+
+namespace ProjetoRabbitMQ.Services.Interfaces
 {
     public interface IPasswordHasher
     {
-        public string Hash(string password);
-        public bool Compare(string password, string hashedPassword);
+        public Result<string> Hash(string password);
+        public Result<bool> Compare(string password, string hashedPassword);
     }
 }

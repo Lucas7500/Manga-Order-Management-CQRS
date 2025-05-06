@@ -77,12 +77,29 @@ namespace ProjetoRabbitMQ.Models.User.Handlers
 
             if (request.NewPassword != null)
             {
-                if (request.CurrentPassword == null || !hasher.Compare(request.CurrentPassword, user.PasswordHash))
+                if (request.CurrentPassword == null)
                 {
-                    return Result<bool>.Failure("Incorrect Current Password!");
+                    return Result<bool>.Failure("Current Password must be passed!");
                 }
 
-                user.PasswordHash = hasher.Hash(request.NewPassword);
+                var isCurrentPasswordValidResult = hasher.Compare(request.CurrentPassword, user.PasswordHash);
+                if (isCurrentPasswordValidResult.IsFailure)
+                {
+                    return Result<bool>.Failure("Error comparing passwords: {ErrorMessage}", isCurrentPasswordValidResult.ErrorMessage);
+                }
+
+                if (!isCurrentPasswordValidResult.Value)
+                {
+                    return Result<bool>.Failure("Current Password is incorrect!");
+                }
+
+                var hashedPasswordResult = hasher.Hash(request.NewPassword);
+                if (hashedPasswordResult.IsFailure)
+                {
+                    return Result<bool>.Failure("Error hashing password: {ErrorMessage}", hashedPasswordResult.ErrorMessage);
+                }
+
+                user.PasswordHash = hashedPasswordResult.Value;
             }
 
             if (request.NewRole.HasValue)

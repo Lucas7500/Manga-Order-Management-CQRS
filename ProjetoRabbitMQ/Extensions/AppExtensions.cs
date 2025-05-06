@@ -12,6 +12,7 @@ using ProjetoRabbitMQ.Models.User.Commands;
 using ProjetoRabbitMQ.Models.User.Validation;
 using ProjetoRabbitMQ.Services;
 using ProjetoRabbitMQ.Services.Interfaces;
+using Scrypt;
 using Serilog;
 using System.Text;
 
@@ -69,6 +70,8 @@ namespace ProjetoRabbitMQ.Extensions
         
         public static void AddDependencyInjectionForServices(this IServiceCollection services)
         {
+            services.AddScoped<ScryptEncoder>();
+
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ITokenService, JwtTokenService>();
             services.AddScoped<IPasswordHasher, ScryptPasswordHasher>();

@@ -1,7 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using ProjetoRabbitMQ.Models.Base;
 using ProjetoRabbitMQ.Services.Interfaces;
-using Serilog;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;

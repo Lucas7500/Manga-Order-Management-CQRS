@@ -2,7 +2,6 @@
 using ProjetoRabbitMQ.Infrastructure.Interfaces;
 using ProjetoRabbitMQ.Models.Base;
 using ProjetoRabbitMQ.Models.User.Commands;
-using ProjetoRabbitMQ.Services.Interfaces;
 
 namespace ProjetoRabbitMQ.Models.User.Handlers
 {

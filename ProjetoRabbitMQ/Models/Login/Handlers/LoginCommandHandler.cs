@@ -19,13 +19,24 @@ namespace ProjetoRabbitMQ.Models.Login.Handlers
 
             var user = await unitOfWork.UserRepository.GetAsync(user => user.Email == request.Email, ct);
 
-            if (user == null || !hasher.Compare(request.Password, user.PasswordHash))
+            if (user == null)
+            {
+                return Result<LoginResponse>.Failure("Incorrect User Email or Password!");
+            }
+
+            var hashedPasswordResult = hasher.Compare(request.Password, user.PasswordHash);
+
+            if (hashedPasswordResult.IsFailure)
+            {
+                return Result<LoginResponse>.Failure("Error When Comparing Passwords: {ErrorMessage}", hashedPasswordResult.ErrorMessage);
+            }
+
+            if (!hashedPasswordResult.Value)
             {
                 return Result<LoginResponse>.Failure("Incorrect User Email or Password!");
             }
 
             var tokenResult = tokenService.GenerateToken(user.Id, user.Email);
-
             if (tokenResult.IsFailure)
             {
                 return Result<LoginResponse>.Failure("Failed in Token Generation!");
