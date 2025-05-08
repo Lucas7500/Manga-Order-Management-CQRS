@@ -5,5 +5,5 @@ using ProjetoRabbitMQ.Models.MangaOrder.Responses;
 
 namespace ProjetoRabbitMQ.Models.MangaOrder.Commands
 {
-    public record RequestMangaOrderCommand(int CustomerId, IEnumerable<MangaOrderItemDto> orderedMangas) : IRequest<Result<RequestedMangaOrderResponse>>;
+    public record RequestMangaOrderCommand(int CustomerId, IEnumerable<MangaOrderItemDto> OrderedMangas) : IRequest<Result<RequestedMangaOrderResponse>>;
 }
