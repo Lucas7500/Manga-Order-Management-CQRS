@@ -9,6 +9,7 @@ builder.Services.AddSwaggerGen();
 builder.AddRabbitMQService();
 builder.AddDatabaseContext();
 builder.AddJwtConfiguration();
+builder.Services.AddAuthorization();
 builder.Services.AddMediatRConfiguration();
 builder.Services.AddDependencyInjectionForServices();
 builder.Host.AddSerilogConfiguration();
@@ -25,6 +26,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
