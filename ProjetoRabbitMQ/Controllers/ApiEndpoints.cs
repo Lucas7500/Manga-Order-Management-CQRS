@@ -5,9 +5,11 @@ using ProjetoRabbitMQ.Models.Base;
 using ProjetoRabbitMQ.Models.Enums;
 using ProjetoRabbitMQ.Models.Login.Commands;
 using ProjetoRabbitMQ.Models.Manga.Commands;
+using ProjetoRabbitMQ.Models.Manga.Queries;
 using ProjetoRabbitMQ.Models.MangaOrder.Commands;
 using ProjetoRabbitMQ.Models.MangaOrder.Queries;
 using ProjetoRabbitMQ.Models.User.Commands;
+using ProjetoRabbitMQ.Models.User.Queries;
 
 namespace ProjetoRabbitMQ.Controllers
 {
@@ -15,14 +17,16 @@ namespace ProjetoRabbitMQ.Controllers
     {
         public static void AddEndpoints(this WebApplication app)
         {
-            app.AddUsersEndpoints();
-            app.AddMangasEndpoints();
-            app.AddOrdersEndpoints();
+            var v1 = app.MapGroup("v1").WithTags("v1");
+
+            v1.AddUsersEndpoints();
+            v1.AddMangasEndpoints();
+            v1.AddOrdersEndpoints();
         }
 
-        private static void AddUsersEndpoints(this WebApplication app)
+        private static void AddUsersEndpoints(this RouteGroupBuilder api)
         {
-            app.MapPost("users/login",
+            api.MapPost("users/login",
                 async (
                     [FromBody] LoginCommand command,
                     [FromServices] IMediator mediator,
@@ -33,7 +37,26 @@ namespace ProjetoRabbitMQ.Controllers
                     return OkOrBadRequest(result);
                 });
 
-            app.MapPost("users/register", [Authorize(Roles = nameof(UserRole.Admin))]
+            api.MapGet("users", [Authorize(Roles = nameof(UserRole.Admin))]
+                async (
+                        [FromServices] IMediator mediator,
+                        [FromServices] CancellationToken ct) =>
+                    {
+                        var result = await mediator.Send(new GetAllUsersQuery(), ct);
+                        return OkOrBadRequest(result);
+                    });
+
+            api.MapGet("users/{id:int}", [Authorize(Roles = nameof(UserRole.Admin))]
+                async (
+                        [FromRoute] int id,
+                        [FromServices] IMediator mediator,
+                        [FromServices] CancellationToken ct) =>
+                    {
+                        var result = await mediator.Send(new GetUserByIdQuery(id), ct);
+                        return OkOrBadRequest(result);
+                    });
+
+            api.MapPost("users/register", [Authorize(Roles = nameof(UserRole.Admin))]
                 async (
                     [FromBody] CreateUserCommand command,
                     [FromServices] IMediator mediator,
@@ -44,7 +67,7 @@ namespace ProjetoRabbitMQ.Controllers
                     return OkOrBadRequest(result, $"User created successfully with id: {result.Value.Id}!");
                 });
 
-            app.MapPatch("users/{id:int}", [Authorize(Roles = nameof(UserRole.Admin))]
+            api.MapPatch("users/{id:int}", [Authorize(Roles = nameof(UserRole.Admin))]
                 async (
                    [FromRoute] int id,
                    [FromBody] UpdateUserCommand command,
@@ -61,7 +84,7 @@ namespace ProjetoRabbitMQ.Controllers
                     return OkOrBadRequest(result, $"User with id {id} updated successfully!");
                 });
 
-            app.MapDelete("users/{id:int}", [Authorize(Roles = nameof(UserRole.Admin))]
+            api.MapDelete("users/{id:int}", [Authorize(Roles = nameof(UserRole.Admin))]
                 async (
                     [FromRoute] int id,
                     [FromServices] IMediator mediator,
@@ -73,9 +96,28 @@ namespace ProjetoRabbitMQ.Controllers
                 });
         }
 
-        private static void AddMangasEndpoints(this WebApplication app)
+        private static void AddMangasEndpoints(this RouteGroupBuilder api)
         {
-            app.MapPost("mangas/register", [Authorize(Roles = nameof(UserRole.Admin))]
+            api.MapGet("mangas",
+                async (
+                        [FromServices] IMediator mediator,
+                        [FromServices] CancellationToken ct) =>
+                {
+                    var result = await mediator.Send(new GetAllMangasQuery(), ct);
+                    return OkOrBadRequest(result);
+                });
+
+            api.MapGet("mangas/{id:guid}",
+                async (
+                        [FromRoute] Guid id,
+                        [FromServices] IMediator mediator,
+                        [FromServices] CancellationToken ct) =>
+                {
+                    var result = await mediator.Send(new GetMangaByIdQuery(id), ct);
+                    return OkOrBadRequest(result);
+                });
+
+            api.MapPost("mangas/register", [Authorize(Roles = nameof(UserRole.Admin))]
                 async (
                     [FromBody] CreateMangaCommand command,
                     [FromServices] IMediator mediator,
@@ -86,7 +128,7 @@ namespace ProjetoRabbitMQ.Controllers
                     return OkOrBadRequest(result, $"Manga created successfully with id: {result.Value.Id}!");
                 });
 
-            app.MapPatch("mangas/{id:guid}", [Authorize(Roles = nameof(UserRole.Admin))]
+            api.MapPatch("mangas/{id:guid}", [Authorize(Roles = nameof(UserRole.Admin))]
             async (
                     [FromRoute] Guid id,
                     [FromBody] UpdateMangaCommand command,
@@ -103,7 +145,7 @@ namespace ProjetoRabbitMQ.Controllers
                     return OkOrBadRequest(result, $"Manga with id {id} updated successfully!");
                 });
 
-            app.MapDelete("mangas/{id:guid}", [Authorize(Roles = nameof(UserRole.Admin))]
+            api.MapDelete("mangas/{id:guid}", [Authorize(Roles = nameof(UserRole.Admin))]
                 async (
                         [FromRoute] Guid id,
                         [FromServices] IMediator mediator,
@@ -115,9 +157,9 @@ namespace ProjetoRabbitMQ.Controllers
                 });
         }
 
-        private static void AddOrdersEndpoints(this WebApplication app)
+        private static void AddOrdersEndpoints(this RouteGroupBuilder api)
         {
-            app.MapGet("orders/{customerId:int}",
+            api.MapGet("orders/{customerId:int}",
                 async (
                         [FromRoute] int customerId,
                         [FromServices] IMediator mediator,
@@ -128,7 +170,7 @@ namespace ProjetoRabbitMQ.Controllers
                     return OkOrBadRequest(result);
                 });
 
-            app.MapGet("check-order/{id:ulid}",
+            api.MapGet("check-order/{id:ulid}",
                 async (
                         [FromRoute] Ulid id,
                         [FromServices] IMediator mediator,
@@ -139,7 +181,7 @@ namespace ProjetoRabbitMQ.Controllers
                     return OkOrBadRequest(result);
                 });
 
-            app.MapPost("order",
+            api.MapPost("order",
                 async (
                         [FromBody] RequestMangaOrderCommand command,
                         [FromServices] IMediator mediator,
