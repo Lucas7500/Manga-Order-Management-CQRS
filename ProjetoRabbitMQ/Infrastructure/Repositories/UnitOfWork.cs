@@ -1,4 +1,5 @@
 ﻿using ProjetoRabbitMQ.Infrastructure.Interfaces;
+using ProjetoRabbitMQ.Models.Joins;
 using ProjetoRabbitMQ.Models.Manga;
 using ProjetoRabbitMQ.Models.MangaOrder;
 using ProjetoRabbitMQ.Models.User;
@@ -18,11 +19,15 @@ namespace ProjetoRabbitMQ.Infrastructure.Repositories
         
         private readonly Lazy<IRepository<MangaOrderItemEntity>> _mangaOrderItemRepository 
             = new(() => new Repository<MangaOrderItemEntity>(context));
+        
+        private readonly Lazy<IRepository<UserMangaEntity>> _userMangaRepository 
+            = new(() => new Repository<UserMangaEntity>(context));
 
         public IRepository<UserEntity> UserRepository => _userRepository.Value;
         public IRepository<MangaEntity> MangaRepository => _mangaRepository.Value;
         public IRepository<MangaOrderEntity> MangaOrderRepository => _mangaOrderRepository.Value;
         public IRepository<MangaOrderItemEntity> MangaOrderItemRepository => _mangaOrderItemRepository.Value;
+        public IRepository<UserMangaEntity> UserMangaRepository => _userMangaRepository.Value;
 
         public async Task CommitAsync(CancellationToken ct = default)
         {
