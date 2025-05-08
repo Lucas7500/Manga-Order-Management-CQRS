@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
+using ProjetoRabbitMQ.Extensions.Mappers;
 using ProjetoRabbitMQ.Infrastructure.Interfaces;
 using ProjetoRabbitMQ.Models.Base;
 using ProjetoRabbitMQ.Models.User.Commands;
@@ -36,13 +37,7 @@ namespace ProjetoRabbitMQ.Models.User.Handlers
                 return Result<CreatedUserResponse>.Failure("Error hashing password!");
             }
 
-            var user = new UserEntity
-            {
-                Name = request.Name,
-                Email = request.Email,
-                PasswordHash = hashedPasswordResult.Value,
-                Role = request.Role
-            };
+            var user = request.ToEntity(hashedPasswordResult.Value);
 
             await repository.AddAsync(user, ct);
             await unitOfWork.CommitAsync(ct);

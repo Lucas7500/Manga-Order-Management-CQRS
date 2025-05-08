@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
+using ProjetoRabbitMQ.Extensions.Mappers;
 using ProjetoRabbitMQ.Infrastructure.Interfaces;
 using ProjetoRabbitMQ.Models.Base;
 using ProjetoRabbitMQ.Models.Manga.Commands;
@@ -32,18 +33,7 @@ namespace ProjetoRabbitMQ.Models.Manga.Handlers
                 return Result<CreatedMangaResult>.Failure("This manga is already registered as {MangaName}!", mangaInDb.Title);
             }
 
-            var manga = new MangaEntity
-            {
-                Id = Guid.NewGuid(),
-                Title = request.Title,
-                Author = request.Author,
-                ReleaseDate = request.ReleaseDate,
-                Quantity = request.Quantity,
-                Price = request.Price,
-                Description = request.Description,
-                Genres = request.Genres.Distinct().ToList(),
-                Aliases = request.Aliases.Distinct().ToList(),
-            };
+            var manga = request.ToEntity();
 
             await repository.AddAsync(manga, ct);
             await unitOfWork.CommitAsync(ct);
