@@ -24,7 +24,7 @@ namespace ProjetoRabbitMQ.Bus.Consumers
                 .Include(o => o.OrderedMangas)
                     .ThenInclude(om => om.OrderedManga)
                 .AsSplitQuery()
-                .FirstOrDefaultAsync(o => o.Id == context.Message.MangaOrderId);
+                .FirstOrDefaultAsync(o => o.Id == context.Message.MangaOrderId, context.CancellationToken);
 
             if (mangaOrder is null)
             {
@@ -52,7 +52,8 @@ namespace ProjetoRabbitMQ.Bus.Consumers
                 
                 mangaOrder.Status = OrderStatus.Cancelled;
                 mangaOrder.CancellationReason = handleOrderResult.ErrorMessage;
-                
+
+                await unitOfWork.CommitAsync(context.CancellationToken);
                 return;
             }
             
@@ -73,8 +74,6 @@ namespace ProjetoRabbitMQ.Bus.Consumers
                 {
                     logger.LogWarning("Manga Id: {Id} has insufficient quantity", order.MangaId);
 
-                    await unitOfWork.CommitAsync(ct);
-                    
                     return Result<bool>.Failure($"Insufficient quantity of '{orderedManga.Title}'!");
                 }
 
@@ -85,8 +84,6 @@ namespace ProjetoRabbitMQ.Bus.Consumers
                     UserId = mangaOrder.CustomerId,
                     MangaId = order.MangaId,
                 }, ct);
-
-                await unitOfWork.CommitAsync(ct);
             }
 
             return Result<bool>.Success(true);
