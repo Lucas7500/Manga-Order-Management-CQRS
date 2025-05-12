@@ -8,6 +8,8 @@ using ProjetoRabbitMQ.Infrastructure.Interfaces;
 using ProjetoRabbitMQ.Infrastructure.Repositories;
 using ProjetoRabbitMQ.Models.Manga.Commands;
 using ProjetoRabbitMQ.Models.Manga.Validation;
+using ProjetoRabbitMQ.Models.MangaOrder.Commands;
+using ProjetoRabbitMQ.Models.MangaOrder.Validation;
 using ProjetoRabbitMQ.Models.User.Commands;
 using ProjetoRabbitMQ.Models.User.Validation;
 using ProjetoRabbitMQ.Services;
@@ -86,6 +88,8 @@ namespace ProjetoRabbitMQ.Extensions
 
             services.AddScoped<IValidator<CreateMangaCommand>, CreateMangaCommandValidator>();
             services.AddScoped<IValidator<UpdateMangaCommand>, UpdateMangaCommandValidator>();
+
+            services.AddScoped<IValidator<RequestMangaOrderCommand>, RequestMangaOrderCommandValidator>();
         }
 
         public static void AddSerilogConfiguration(this ConfigureHostBuilder config)
