@@ -23,9 +23,8 @@ namespace ProjetoRabbitMQ.Models.MangaOrder.Handlers
 
             var order = request.ToEntity();
             await repository.AddAsync(order, ct);
-
+            
             var validationResult = await validator.ValidateAsync(request, ct);
-
             if (!validationResult.IsValid)
             {
                 var errors = validationResult.ToString();
@@ -37,13 +36,11 @@ namespace ProjetoRabbitMQ.Models.MangaOrder.Handlers
                 order.CancellationReason = errors;
 
                 await unitOfWork.CommitAsync(ct);
-
                 return Result<RequestedMangaOrderResponse>.Failure(errors);
             }
 
 
             await unitOfWork.CommitAsync(ct);
-
             await publishEndpoint.Publish(new RequestedMangaOrderEvent(order.Id), ct);
 
             logger.LogInformation("Manga Order {OrderId} requested successfully", order.Id);
