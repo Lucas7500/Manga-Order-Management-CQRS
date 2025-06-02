@@ -36,7 +36,7 @@ namespace ProjetoRabbitMQ.Models.Login.Handlers
                 return Result<LoginResponse>.Failure("Incorrect User Email or Password!");
             }
 
-            var tokenResult = tokenService.GenerateToken(user.Id, user.Email);
+            var tokenResult = tokenService.GenerateToken(user.Id, user.Email, user.Role);
             if (tokenResult.IsFailure)
             {
                 return Result<LoginResponse>.Failure("Failed in Token Generation!");

@@ -1,5 +1,7 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using ProjetoRabbitMQ.Models.Base;
+using ProjetoRabbitMQ.Models.Enums;
 using ProjetoRabbitMQ.Services.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -9,28 +11,31 @@ namespace ProjetoRabbitMQ.Services
 {
     public class JwtTokenService(ILogger<JwtTokenService> logger) : ITokenService
     {
-        private readonly string _privateKey = Environment.GetEnvironmentVariable("JWT_KEY") 
+        private readonly string _privateKey = Environment.GetEnvironmentVariable("JWT_KEY")
             ?? throw new ArgumentNullException(nameof(_privateKey));
 
-        public Result<string> GenerateToken(int userId, string email)
+        public Result<string> GenerateToken(int userId, string email, UserRole role)
         {
             logger.LogInformation("Started generating JWT token");
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_privateKey);
-            var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.Sha512);
-            
-            var claims = new ClaimsIdentity(
-            [
-                new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
-                new Claim(ClaimTypes.Email, email),
-            ]);
+            var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512);
 
+            var claims = new Claim[]
+            {
+                new(ClaimTypes.NameIdentifier, userId.ToString()),
+                new(ClaimTypes.Email, email),
+                new(ClaimTypes.Role, role.ToString())
+            };
+
+            var identity = new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme);
+            
             var token = tokenHandler.CreateToken(new SecurityTokenDescriptor
             {
-                Subject = claims,
+                Subject = identity,
                 SigningCredentials = credentials,
-                Expires = DateTime.UtcNow.AddDays(1)
+                Expires = DateTime.UtcNow.AddDays(1),
             });
 
             return Result<string>.Success(tokenHandler.WriteToken(token));
