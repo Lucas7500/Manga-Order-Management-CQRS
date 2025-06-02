@@ -10,9 +10,9 @@ namespace ProjetoRabbitMQ.Infrastructure.Configuration
         {
             Id = -1,
             Name = "admin",
-            Email = string.Empty,
+            Email = "admin@admin.adm",
             Role = UserRole.Admin,
-            PasswordHash = "admin",
+            PasswordHash = "$s2$16384$8$1$xvgcEfj1T0uZwg2gafN3AvMPLO5sW6dUQaz+mLZHSps=$ju73zxXgu81QJP132+M8590VbXA3w7CL1csGnlJ05/8=",
         };
     }
 }
