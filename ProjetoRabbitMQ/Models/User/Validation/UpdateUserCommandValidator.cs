@@ -10,7 +10,7 @@ namespace ProjetoRabbitMQ.Models.User.Validation
             ClassLevelCascadeMode = CascadeMode.Stop;
             RuleLevelCascadeMode = CascadeMode.Stop;
 
-            When(command => command.NewName != null, () =>
+            When(command => !string.IsNullOrWhiteSpace(command.NewName), () =>
             {
                 RuleFor(command => command.NewName)
                     .NotEmpty()
@@ -19,7 +19,7 @@ namespace ProjetoRabbitMQ.Models.User.Validation
                     .WithMessage("Name must be less than 100 characters");
             });
 
-            When(command => command.NewEmail != null, () =>
+            When(command => !string.IsNullOrWhiteSpace(command.NewEmail), () =>
             {
                 RuleFor(command => command.NewEmail)
                     .NotEmpty()
@@ -28,7 +28,7 @@ namespace ProjetoRabbitMQ.Models.User.Validation
                     .WithMessage("Email is invalid");
             });
             
-            When(command => command.NewPassword != null, () =>
+            When(command => !string.IsNullOrWhiteSpace(command.NewPassword), () =>
             {
                 RuleFor(command => command.NewPassword)
                     .NotEmpty()
@@ -37,7 +37,7 @@ namespace ProjetoRabbitMQ.Models.User.Validation
                     .WithMessage("Password must be at least 8 characters");
             });
             
-            When(command => command.NewRole != null, () =>
+            When(command => command.NewRole.HasValue, () =>
             {
                 RuleFor(command => command.NewRole)
                     .IsInEnum()

@@ -58,12 +58,12 @@ namespace ProjetoRabbitMQ.Models.User.Handlers
             UserEntity user,
             CancellationToken ct)
         {
-            if (request.NewName != null)
+            if (!string.IsNullOrWhiteSpace(request.NewName))
             {
                 user.Name = request.NewName;
             }
 
-            if (request.NewEmail != null)
+            if (!string.IsNullOrWhiteSpace(request.NewEmail))
             {
                 var isDuplicateEmail = await repository.HasAnyAsync(user => user.Email == request.NewEmail, ct);
                 
@@ -75,7 +75,7 @@ namespace ProjetoRabbitMQ.Models.User.Handlers
                 user.Email = request.NewEmail;
             }
 
-            if (request.NewPassword != null)
+            if (!string.IsNullOrWhiteSpace(request.NewPassword))
             {
                 if (request.CurrentPassword == null)
                 {
